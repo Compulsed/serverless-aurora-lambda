@@ -1,14 +1,16 @@
-# Welcome to your CDK TypeScript project
+# Serverless Aurora Lambda Starter
 
-This is a blank project for CDK development with TypeScript.
+This project is intended to help set up a very simple CDK Serverless Aurora project with AWS lambda / Api Gateway.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+To run this project:
 
-## Useful commands
+```
+npm install
+npx cdk deploy
+```
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+**Security considerations:**
+
+This project sets up a Serverless Aurora with a public URL and an open security group. This the permissive database networking rule is to eliminate the need for Lambda to be in a VPC. If lambda is in a VPC, the function will not have access to the public internet without a NATGateway OR a NatInstance (expensive).
+
+When running this in a production environment the recommendation to move the RDS cluster into a private subnet, and to have the lambda function exist within a VPC.
