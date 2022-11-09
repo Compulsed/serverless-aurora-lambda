@@ -14,10 +14,7 @@ export class ServerlessAuroraLambda extends cdk.Stack {
 
     const vpc = new Vpc(this, 'Vpc', {
       cidr: '10.0.0.0/16',
-      subnetConfiguration: [
-        { name: 'egress', subnetType: SubnetType.PUBLIC },
-        { name: 'isolated', subnetType: SubnetType.PRIVATE_ISOLATED }, // TODO: Remove, we're only using public
-      ],
+      subnetConfiguration: [{ name: 'egress', subnetType: SubnetType.PUBLIC }],
       natGateways: 0,
     })
 
@@ -26,7 +23,7 @@ export class ServerlessAuroraLambda extends cdk.Stack {
       allowAllOutbound: true,
     })
 
-    dbSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432), 'allow database access from anywhere')
+    dbSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432), 'Allow internet to read / write to aurora')
 
     // Full spec https://github.com/aws/aws-cdk/issues/20197#issuecomment-1117555047
     const dbCluster = new rds.DatabaseCluster(this, 'DbCluster', {

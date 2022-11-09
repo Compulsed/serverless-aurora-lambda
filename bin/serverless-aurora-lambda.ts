@@ -5,4 +5,4 @@ import { ServerlessAuroraLambda } from '../lib/serverless-aurora-lambda'
 
 const app = new cdk.App()
 
-new ServerlessAuroraLambda(app, 'ServerlessAuroraLambda', {})
+new ServerlessAuroraLambda(app, 'ServerlessAurora', {})
