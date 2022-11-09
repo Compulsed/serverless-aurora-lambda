@@ -1,3 +1,4 @@
+import * as cdk from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway'
@@ -7,11 +8,11 @@ import { InstanceType, SecurityGroup, SubnetType, Vpc, Peer, Port } from 'aws-cd
 import { Aspects, Duration } from 'aws-cdk-lib'
 import { CfnDBCluster } from 'aws-cdk-lib/aws-rds'
 
-export class HelloWorld extends Construct {
-  constructor(scope: Construct, id: string) {
-    super(scope, id)
+export class ServerlessAuroraLambda extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props)
 
-    const vpc = new Vpc(this, 'vpc', {
+    const vpc = new Vpc(this, 'Vpc', {
       cidr: '10.0.0.0/16',
       subnetConfiguration: [
         { name: 'egress', subnetType: SubnetType.PUBLIC },
@@ -57,10 +58,11 @@ export class HelloWorld extends Construct {
       },
     })
 
-    const helloFunction = new NodejsFunction(this, 'function', {
+    const apiFunction = new NodejsFunction(this, 'ApiFunction', {
       runtime: Runtime.NODEJS_16_X,
       architecture: Architecture.ARM_64,
       timeout: Duration.seconds(30),
+      entry: __dirname + '/serverless-aurora-lambda.function.ts',
       environment: {
         databaseSecretArn: dbCluster.secret?.secretFullArn ?? '',
       },
@@ -69,10 +71,10 @@ export class HelloWorld extends Construct {
       },
     })
 
-    dbCluster.secret?.grantRead(helloFunction)
+    dbCluster.secret?.grantRead(apiFunction)
 
-    new LambdaRestApi(this, 'apigw', {
-      handler: helloFunction,
+    new LambdaRestApi(this, 'ApiGateway', {
+      handler: apiFunction,
     })
   }
 }
